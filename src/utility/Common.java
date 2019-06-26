@@ -17,6 +17,9 @@ public class Common {
 	
 	
 
-	public static final int Login_window_X =300;
-	public static final int Login_window_Y =350;
+	public static final int Login_wnd_X =300;
+	public static final int Login_wnd_Y =350;
+	
+	public static final int Create_Acc_wnd_X =300;
+	public static final int Create_Acc_wnd_Y =350;
 }

@@ -27,7 +27,7 @@ public class LoginFrame extends JFrame {
 	public LoginFrame() {
 		super(Common.APP_NAME);
 
-		this.setSize(Common.Login_window_X, Common.Login_window_Y);
+		this.setSize(Common.Login_wnd_X, Common.Login_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
 
@@ -105,6 +105,10 @@ public class LoginFrame extends JFrame {
 			serverClientMessanger.setVisible(true);
 			this.dispose();
 		}else if(whichScreen.equals("Create")){
+
+			CreateAccountFrame createAccountFrame = new CreateAccountFrame();
+			createAccountFrame.setVisible(true);
+			this.dispose();
 			
 		}
 	}

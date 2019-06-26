@@ -27,7 +27,7 @@ public class CreateAccountFrame extends JFrame {
 	public CreateAccountFrame() {
 		super(Common.APP_NAME);
 
-		this.setSize(Common.Login_window_X, Common.Login_window_Y);
+		this.setSize(Common.Create_Acc_wnd_X, Common.Create_Acc_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
 

@@ -48,19 +48,19 @@ public class LoginFrame extends JFrame {
 		lblHeader.setBounds((getWidth() / 2) - 50, 0, 100, 50);
 
 		lblUserName = new JLabel(Common.UserName);
-		lblUserName.setBounds(25, 75, 120, 30);
+		lblUserName.setBounds(25, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		lblPassword = new JLabel(Common.Password);
-		lblPassword.setBounds(25, 125, 120, 30);
+		lblPassword.setBounds(25, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		txtUserName = new JTextField();
-		txtUserName.setBounds(120, 75, 150, 30);
+		txtUserName.setBounds(150, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		txtPassword = new JPasswordField();
-		txtPassword.setBounds(120, 125, 150, 30);
+		txtPassword.setBounds(150, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		btnSignIn = new JButton(Common.SignIn);
-		btnSignIn.setBounds(200, 185, 70, 30);
+		btnSignIn.setBounds(230, 185, 100, 30);
 
 		btnCreateAccount = new JButton(Common.Craete_Account);
 		btnCreateAccount.setBounds(25, 185, 125, 30);

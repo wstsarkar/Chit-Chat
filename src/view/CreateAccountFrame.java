@@ -16,11 +16,11 @@ public class CreateAccountFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private JButton btnSignIn, btnCreateAccount;
-	private JLabel lblUserName, lblPassword, lblHeader;
+	private JButton btnSave, btnCancel;
+	private JLabel lblHeader, lblUserName, lblPassword,lblConfirmPassword,lblName,lblEmail,lblMobile ;
 
-	private JTextField txtUserName;
-	private JPasswordField txtPassword;
+	private JTextField txtUserName,txtName,txtEmail,txtMobile;
+	private JPasswordField txtPassword,txtConfirmPassword;
 	
 	
 	
@@ -47,66 +47,95 @@ public class CreateAccountFrame extends JFrame {
 		lblHeader.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblHeader.setBounds((getWidth() / 2) - 50, 0, 100, 50);
 
+		lblName = new JLabel(Common.Name);
+		lblName.setBounds(25, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
+		
+		lblEmail = new JLabel(Common.Email);
+		lblEmail.setBounds(25, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
+		
+		lblMobile = new JLabel(Common.Mobile);
+		lblMobile.setBounds(25, 175, Common.TextBox_X_180, Common.TextBox_Y_30);
+
 		lblUserName = new JLabel(Common.UserName);
-		lblUserName.setBounds(25, 75, 120, 30);
+		lblUserName.setBounds(25, 225, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		lblPassword = new JLabel(Common.Password);
-		lblPassword.setBounds(25, 125, 120, 30);
+		lblPassword.setBounds(25, 275, Common.TextBox_X_180, Common.TextBox_Y_30);
 
+		lblConfirmPassword = new JLabel(Common.Confirm_Password);
+		lblConfirmPassword.setBounds(25, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
+
+		txtName = new JTextField();
+		txtName.setBounds(150, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
+
+		txtEmail = new JTextField();
+		txtEmail.setBounds(150, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
+		
+		txtMobile = new JTextField();
+		txtMobile.setBounds(150, 175, Common.TextBox_X_180, Common.TextBox_Y_30);
+		
 		txtUserName = new JTextField();
-		txtUserName.setBounds(120, 75, 150, 30);
+		txtUserName.setBounds(150, 225, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		txtPassword = new JPasswordField();
-		txtPassword.setBounds(120, 125, 150, 30);
+		txtPassword.setBounds(150, 275, Common.TextBox_X_180, Common.TextBox_Y_30);
 
-		btnSignIn = new JButton(Common.SignIn);
-		btnSignIn.setBounds(200, 185, 70, 30);
+		txtConfirmPassword = new JPasswordField();
+		txtConfirmPassword.setBounds(150, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
 
-		btnCreateAccount = new JButton(Common.Craete_Account);
-		btnCreateAccount.setBounds(25, 185, 125, 30);
+		btnSave = new JButton(Common.Save);
+		btnSave.setBounds(230, 385, 100, 30);
+
+		btnCancel = new JButton(Common.Cancel);
+		btnCancel.setBounds(25, 385, 125, 30);
 
 	}
 
 	private void attachCommoponent() {
 
 		getContentPane().add(lblHeader);
+		getContentPane().add(lblName);
+		getContentPane().add(lblEmail);
+		getContentPane().add(lblMobile);		
 		getContentPane().add(lblUserName);
-		getContentPane().add(txtUserName);
 		getContentPane().add(lblPassword);
+		getContentPane().add(lblConfirmPassword);
+
+		getContentPane().add(txtName);
+		getContentPane().add(txtEmail);
+		getContentPane().add(txtMobile);
+		getContentPane().add(txtUserName);
 		getContentPane().add(txtPassword);
-		getContentPane().add(btnCreateAccount);
-		getContentPane().add(btnSignIn);
+		getContentPane().add(txtConfirmPassword);
+		
+		getContentPane().add(btnCancel);
+		getContentPane().add(btnSave);
 	}
 
 	private void actionListeners() {
 		
-		btnSignIn.addActionListener(new ActionListener() {
+		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				goTo("Messanger");
+				goTo("Saved");
                 
 			}
 		});
 		
-		btnCreateAccount.addActionListener(new ActionListener() {
+		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				goTo("Create");
+				goTo("Cancel");
 			}
 		});
 
 	}
 	
 	private void goTo(String whichScreen){
-		if(whichScreen.equals("Messanger")){
-
-			ClientMessengerFrame serverClientMessanger = new ClientMessengerFrame();
-			serverClientMessanger.setVisible(true);
-			this.dispose();
-		}else if(whichScreen.equals("Create")){
-			
-		}
+		LoginFrame loginFrame = new LoginFrame();
+		loginFrame.setVisible(true);
+		this.dispose();
 	}
 
 }

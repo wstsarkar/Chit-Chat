@@ -11,6 +11,9 @@ public class Common {
 	public static final String SignIn ="Sign In";
 	public static final String SignOut ="Sign Out";
 	public static final String Craete_Account ="Create Account";
+
+	public static final String Send ="Send";
+	public static final String ChatList ="Chat List";
 	
 	public static final String Save ="Save";
 	public static final String Cancel ="Cancel";
@@ -22,7 +25,6 @@ public class Common {
 	public static final String UserName ="User Name";
 	public static final String Password ="Password";
 	public static final String Confirm_Password ="Confirm Password";
-	
 	
 	
 	

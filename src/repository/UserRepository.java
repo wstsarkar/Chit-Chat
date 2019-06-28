@@ -70,5 +70,14 @@ public class UserRepository {
 		
 		return list(query.toString());
 	}
+	
+	public List<User> getAllOnlineUserExcept(String userName){
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT * FROM Users ");
+		query.append(" WHERE user_name != '" + userName + "'");
+		query.append(" AND is_logged_in = 1");
+		
+		return list(query.toString());
+	}
 
 }

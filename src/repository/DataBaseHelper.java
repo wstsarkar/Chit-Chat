@@ -13,7 +13,7 @@ import java.sql.Statement;
  */
 public class DataBaseHelper {
 	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=Assignment";
+	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=Communication";
 	private static final String USER = "sa";
 	private static final String PASS = "sonic600";
 

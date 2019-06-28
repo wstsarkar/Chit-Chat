@@ -7,8 +7,9 @@ package utility;
  */
 public class Common {
 	public static final String APP_NAME ="IIT Chit-Chat";
-	
-	public static final String SignIn ="SignIn";
+
+	public static final String SignIn ="Sign In";
+	public static final String SignOut ="Sign Out";
 	public static final String Craete_Account ="Create Account";
 	
 	public static final String Save ="Save";
@@ -30,7 +31,10 @@ public class Common {
 	public static final int Login_wnd_Y =350;
 	
 	public static final int Create_Acc_wnd_X =355;
-	public static final int Create_Acc_wnd_Y =500;
+	public static final int Create_Acc_wnd_Y =500;	
+
+	public static final int Chat_wnd_X =300;
+	public static final int Chat_wnd_Y =385;
 
 	public static final int TextBox_X_150 =150;
 	public static final int TextBox_X_180 =180;

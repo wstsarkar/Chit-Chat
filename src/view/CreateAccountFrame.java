@@ -14,7 +14,7 @@ import utility.Common;
 
 public class CreateAccountFrame extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private JButton btnSave, btnCancel;
 	private JLabel lblHeader, lblUserName, lblPassword,lblConfirmPassword,lblName,lblEmail,lblMobile ;

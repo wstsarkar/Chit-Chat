@@ -101,7 +101,7 @@ public class LoginFrame extends JFrame {
 	private void goTo(String whichScreen){
 		if(whichScreen.equals("Messanger")){
 
-			ClientMessengerFrame serverClientMessanger = new ClientMessengerFrame();
+			ChatFrame serverClientMessanger = new ChatFrame();
 			serverClientMessanger.setVisible(true);
 			this.dispose();
 		}else if(whichScreen.equals("Create")){

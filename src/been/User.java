@@ -9,9 +9,29 @@ public class User {
 	private int user_id;
 	private String user_name;
 	private String password;
+	private String name;
 	private String email;
 	private String mobile_no;
 	private int is_logged_in;
+	
+	public User() {
+		
+	}
+	
+	
+	public User(int user_id, String user_name, String password, String name, String email, String mobile_no,
+			int is_logged_in) {
+		super();
+		this.user_id = user_id;
+		this.user_name = user_name;
+		this.password = password;
+		this.name = name;
+		this.email = email;
+		this.mobile_no = mobile_no;
+		this.is_logged_in = is_logged_in;
+	}
+
+
 	public int getUser_id() {
 		return user_id;
 	}
@@ -65,6 +85,15 @@ public class User {
 	 */
 	public void setIs_logged_in(int is_logged_in) {
 		this.is_logged_in = is_logged_in;
+	}
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

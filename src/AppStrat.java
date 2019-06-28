@@ -1,4 +1,4 @@
-import view.FriendListFrame;
+import view.LoginFrame;
 
 /**
  * 
@@ -9,10 +9,8 @@ public class AppStrat {
 
 	public static void main(String[] args) {
 
-
-		FriendListFrame friendListFrame = new FriendListFrame();
-		friendListFrame.setVisible(true);
-		
+		LoginFrame frame = new LoginFrame();
+		frame.setVisible(true);
 
 	}
 

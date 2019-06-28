@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,9 +8,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import been.User;
+import controller.UserController;
 import utility.Common;
 
 public class CreateAccountFrame extends JFrame {
@@ -17,15 +21,19 @@ public class CreateAccountFrame extends JFrame {
 	private static final long serialVersionUID = 2L;
 
 	private JButton btnSave, btnCancel;
-	private JLabel lblHeader, lblUserName, lblPassword,lblConfirmPassword,lblName,lblEmail,lblMobile ;
+	private JLabel lblHeader, lblUserName, lblPassword,lblConfirmPassword,lblName,lblEmail,lblMobile;
+	private JLabel lblErrorMessage;
 
 	private JTextField txtUserName,txtName,txtEmail,txtMobile;
 	private JPasswordField txtPassword,txtConfirmPassword;
 	
+
+	private UserController userController;
+	User me;
 	
-	
-	public CreateAccountFrame() {
+	public CreateAccountFrame(User me) {
 		super(Common.APP_NAME);
+		this.me = me;
 
 		this.setSize(Common.Create_Acc_wnd_X, Common.Create_Acc_wnd_Y);
 		this.setLayout(null);
@@ -39,6 +47,8 @@ public class CreateAccountFrame extends JFrame {
 		attachCommoponent();
 
 		actionListeners();
+		
+		this.userController = new UserController();
 	}
 
 	private void initComponent() {
@@ -64,6 +74,11 @@ public class CreateAccountFrame extends JFrame {
 
 		lblConfirmPassword = new JLabel(Common.Confirm_Password);
 		lblConfirmPassword.setBounds(25, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
+		
+
+		lblErrorMessage = new JLabel();
+		lblErrorMessage.setForeground(Color.RED);		
+		lblErrorMessage.setBounds(25, 425, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		txtName = new JTextField();
 		txtName.setBounds(150, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
@@ -110,6 +125,7 @@ public class CreateAccountFrame extends JFrame {
 		
 		getContentPane().add(btnCancel);
 		getContentPane().add(btnSave);
+		getContentPane().add(lblErrorMessage);
 	}
 
 	private void actionListeners() {
@@ -118,7 +134,55 @@ public class CreateAccountFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				goTo("Saved");
+				String name = txtName.getText();
+				if(name.equals("")){
+					lblErrorMessage.setText(Common.NameEmpty);
+					return;
+				}
+				
+				String userName = txtUserName.getText();
+				if(userName.equals("")){
+					lblErrorMessage.setText(Common.UserNameEmpty);
+					return;
+				}
+				String passText = new String(txtPassword.getPassword());
+				if(passText.equals("")){
+					lblErrorMessage.setText(Common.PasswordEmpty);
+					return;
+				}
+				String confirmPassText = new String(txtConfirmPassword.getPassword());
+				if(confirmPassText.equals("")){
+					lblErrorMessage.setText(Common.ConfirmPasswordEmpty);
+					return;
+				}
+				if(!confirmPassText.equals(passText)){
+					lblErrorMessage.setText(Common.PasswordNotMatch);
+					return;
+				}
+				
+
+				String email = txtEmail.getText();
+				String mobile_no = txtMobile.getText();
+				
+				User user = userController.getUser(userName);
+				if(user != null){
+					lblErrorMessage.setText(Common.DuplicateUserName);
+					return;					
+				}
+				
+				user = new User(0, userName, passText, name, email, mobile_no, 0);
+				
+				int id = userController.createUser(user);
+				if(id > 0){ 
+					JOptionPane.showMessageDialog(rootPane, "Account created", "Success", JOptionPane.INFORMATION_MESSAGE);
+                
+					goTo("Login");
+				}else{
+					lblErrorMessage.setText(Common.CreatUserFailed);
+					return;
+				}
+
+				
                 
 			}
 		});
@@ -126,7 +190,7 @@ public class CreateAccountFrame extends JFrame {
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				goTo("Cancel");
+				goTo("Login");
 			}
 		});
 

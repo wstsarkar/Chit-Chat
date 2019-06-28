@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import been.User;
+import controller.UserController;
 import utility.Common;
 
 public class LoginFrame extends JFrame {
@@ -17,13 +20,14 @@ public class LoginFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JButton btnSignIn, btnCreateAccount;
-	private JLabel lblUserName, lblPassword, lblHeader;
+	private JLabel lblUserName, lblPassword, lblHeader, lblErrorMessage;
 
 	private JTextField txtUserName;
 	private JPasswordField txtPassword;
-	
-	
-	
+
+	private UserController userController;
+	private User me;
+
 	public LoginFrame() {
 		super(Common.APP_NAME);
 
@@ -39,6 +43,7 @@ public class LoginFrame extends JFrame {
 		attachCommoponent();
 
 		actionListeners();
+		this.userController = new UserController();
 	}
 
 	private void initComponent() {
@@ -52,6 +57,10 @@ public class LoginFrame extends JFrame {
 
 		lblPassword = new JLabel(Common.Password);
 		lblPassword.setBounds(25, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
+
+		lblErrorMessage = new JLabel();
+		lblErrorMessage.setForeground(Color.RED);
+		lblErrorMessage.setBounds(25, 235, Common.TextBox_X_250, Common.TextBox_Y_30);
 
 		txtUserName = new JTextField();
 		txtUserName.setBounds(150, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
@@ -76,19 +85,38 @@ public class LoginFrame extends JFrame {
 		getContentPane().add(txtPassword);
 		getContentPane().add(btnCreateAccount);
 		getContentPane().add(btnSignIn);
+
+		getContentPane().add(lblErrorMessage);
 	}
 
 	private void actionListeners() {
-		
+
 		btnSignIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				String userName = txtUserName.getText();
+				if (userName.equals("")) {
+					lblErrorMessage.setText(Common.UserNameEmpty);
+					return;
+				}
+				String passText = new String(txtPassword.getPassword());
+				if (passText.equals("")) {
+					lblErrorMessage.setText(Common.PasswordEmpty);
+					return;
+				}
 
-				goTo("Messanger");
-                
+				me = userController.getUser(userName, passText);
+				if (me != null) {
+					me.setIs_logged_in(1);
+					userController.updateUser(me);
+					goTo("Messanger");
+				} else {
+					lblErrorMessage.setText(Common.LoginFailed);
+					return;
+				}
 			}
 		});
-		
+
 		btnCreateAccount.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -97,19 +125,20 @@ public class LoginFrame extends JFrame {
 		});
 
 	}
-	
-	private void goTo(String whichScreen){
-		if(whichScreen.equals("Messanger")){
 
-			ChatFrame serverClientMessanger = new ChatFrame();
-			serverClientMessanger.setVisible(true);
-			this.dispose();
-		}else if(whichScreen.equals("Create")){
+	private void goTo(String whichScreen) {
+		if (whichScreen.equals("Messanger")) {
+			if (me != null) {
+				FriendListFrame frame = new FriendListFrame(me);
+				frame.setVisible(true);
+				this.dispose();
+			}
+		} else if (whichScreen.equals("Create")) {
 
-			CreateAccountFrame createAccountFrame = new CreateAccountFrame();
-			createAccountFrame.setVisible(true);
+			CreateAccountFrame frame = new CreateAccountFrame(null);
+			frame.setVisible(true);
 			this.dispose();
-			
+
 		}
 	}
 

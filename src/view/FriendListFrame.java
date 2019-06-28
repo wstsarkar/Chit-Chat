@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -35,7 +37,7 @@ public class FriendListFrame extends JFrame {
 
 	private JPanel panel, chatPanel;
 	private JScrollPane jScrollPane1;
-	private JList<User> friedList;
+	private JList<String> friedList;
 
 	private JPanel userInputPanel;
 	private JTextField userInputTextField;
@@ -45,6 +47,7 @@ public class FriendListFrame extends JFrame {
 
 	private JMenu fileMenu;
 	private JMenuItem signOutMenuItem;
+	private JMenuItem profileMenuItem;
 
 	private JMenu helpMenu;
 	private JMenuItem aboutMenuItem;
@@ -53,10 +56,10 @@ public class FriendListFrame extends JFrame {
 	private List<User> onlineUserList;
 	private UserController userController;
 	private boolean isLogedIn = false;
-	
+
 	private User me;
 
-	public FriendListFrame() {
+	public FriendListFrame(User me) {
 		this.setSize(Common.Chat_wnd_X, Common.Chat_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
@@ -67,7 +70,7 @@ public class FriendListFrame extends JFrame {
 
 		this.isLogedIn = true;
 		this.userController = new UserController();
-		this.me = new User();
+		this.me = me;
 		try {
 			initComponents();
 			attachCommoponent();
@@ -129,6 +132,10 @@ public class FriendListFrame extends JFrame {
 
 		fileMenu.setText("File");
 
+		profileMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/profile.png")));
+		profileMenuItem.setText(Common.Profile);
+		fileMenu.add(profileMenuItem);
+
 		signOutMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/exit.png")));
 		signOutMenuItem.setText(Common.SignOut);
 		fileMenu.add(signOutMenuItem);
@@ -155,7 +162,7 @@ public class FriendListFrame extends JFrame {
 
 		chatPanel = new JPanel();
 		jScrollPane1 = new JScrollPane(friedList);
-		friedList = new JList<User>();
+		friedList = new JList<String>();
 		panel = new JPanel();
 
 		userInputPanel = new JPanel();
@@ -167,6 +174,7 @@ public class FriendListFrame extends JFrame {
 
 		fileMenu = new JMenu();
 		signOutMenuItem = new JMenuItem();
+		profileMenuItem = new JMenuItem();
 
 		helpMenu = new JMenu();
 		aboutMenuItem = new JMenuItem();
@@ -182,12 +190,15 @@ public class FriendListFrame extends JFrame {
 				while (isLogedIn) {
 
 					try {
-						
-						onlineUserList = userController.getAllOnlineUserExcept("");
-						User[] array = onlineUserList.toArray(new User[onlineUserList.size()]);
+
+						onlineUserList = userController.getAllOnlineUserExcept(me.getUser_name());
+						String[] array = new String[onlineUserList.size()];
+						for (int i = 0; i < onlineUserList.size(); i++) {
+							array[i] = onlineUserList.get(i).getName();
+						}
 						friedList.setListData(array);
-						
-						Thread.sleep(2000);
+
+						Thread.sleep(5000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -198,6 +209,20 @@ public class FriendListFrame extends JFrame {
 	}
 
 	public void itemActionListener() {
+		////
+		// Sign Out Menu Item action Listener
+		////
+
+		this.friedList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				JList<String> list = (JList<String>) evt.getSource();
+				if (evt.getClickCount() == 2) {
+					int index = list.locationToIndex(evt.getPoint());
+					User otherClient = onlineUserList.get(index);
+					goToChatFrame(otherClient);
+				}
+			}
+		});
 
 		////
 		// Sign Out Menu Item action Listener
@@ -210,7 +235,10 @@ public class FriendListFrame extends JFrame {
 				if (t != null) {
 					isLogedIn = false;
 				}
-				System.exit(0);
+				me.setIs_logged_in(0);
+
+				userController.updateUser(me);
+				goTo("Login");
 			}
 		});
 
@@ -259,6 +287,19 @@ public class FriendListFrame extends JFrame {
 			}
 		});
 
+	}
+
+	private void goTo(String whichScreen) {
+		if (whichScreen.equals("Login")) {
+			LoginFrame loginFrame = new LoginFrame();
+			loginFrame.setVisible(true);
+			this.dispose();
+		}
+	}
+
+	private void goToChatFrame(User otherClient) {
+		ChatFrame frame = new ChatFrame(me, otherClient);
+		frame.setVisible(true);
 	}
 
 }

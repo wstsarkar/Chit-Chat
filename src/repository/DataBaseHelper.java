@@ -16,6 +16,7 @@ public class DataBaseHelper {
 	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=Communication";
 	private static final String USER = "sa";
 	private static final String PASS = "sonic600";
+	
 
 	private static Connection conn = null;
 

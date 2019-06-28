@@ -22,6 +22,7 @@ public class UserRepository {
 		user.setUser_name(rs.getString("user_name"));
 		user.setPassword(rs.getString("password"));
 		user.setMobile_no(rs.getString("mobile_no"));
+		user.setName(rs.getString("name"));
 		user.setIs_logged_in(rs.getInt("is_logged_in"));
 		return user;
 	}
@@ -62,6 +63,13 @@ public class UserRepository {
 		
 		return user(query.toString());
 	}
+	public User getUser(String userName){
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT * FROM Users ");
+		query.append(" WHERE user_name = '" + userName + "'");
+		
+		return user(query.toString());
+	}
 	
 	public List<User> getAllUserExcept(String userName){
 		StringBuilder query = new StringBuilder();
@@ -78,6 +86,30 @@ public class UserRepository {
 		query.append(" AND is_logged_in = 1");
 		
 		return list(query.toString());
+	}
+
+	public int createUser(User user) {
+		
+		StringBuilder query = new StringBuilder();
+		query.append("INSERT INTO Users (user_name,password,name,email,mobile_no,is_logged_in) ");
+		query.append(" VALUES('"+user.getUser_name()+"','"+user.getPassword()+"','"+user.getName()+"','"+user.getEmail()+"','"+user.getMobile_no()+"',0)");
+		
+		int id = DataBaseHelper.executeQuery(query.toString());	
+		return id;
+	}
+
+	public int updateUser(User user) {
+		StringBuilder query = new StringBuilder();
+		query.append("UPDATE Users SET ");
+		query.append(" email='" + user.getEmail()+"',");
+		query.append(" password='" + user.getPassword()+"',");
+		query.append(" mobile_no='" + user.getMobile_no()+"',");
+		query.append(" is_logged_in=" + user.getIs_logged_in()+",");
+		query.append(" name='" + user.getName()+"' ");
+		query.append(" WHERE user_id = '"+user.getUser_id()+"' ;");
+		
+		int id = DataBaseHelper.executeQuery(query.toString());	
+		return id;
 	}
 
 }

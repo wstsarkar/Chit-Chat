@@ -5,18 +5,16 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,8 +22,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
+import been.MSG;
 import been.User;
 import utility.Common;
+
 /**
  * 
  * @author Williyam
@@ -35,7 +35,8 @@ public class ChatFrame extends JFrame {
 
 	private static final long serialVersionUID = 3L;
 	Thread t;
-	User me, otherClient;
+	private User me, otherClient;
+	private MSG msg;
 
 	public ChatFrame(User me, User otherClient) {
 		this.setSize(Common.Chat_wnd_X, Common.Chat_wnd_Y);
@@ -66,16 +67,6 @@ public class ChatFrame extends JFrame {
 		userInputTextField = new JTextField();
 		userInputSendButton = new JButton();
 
-		menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, getWidth() - 6, 25);
-
-		fileMenu = new JMenu();
-		signOutMenuItem = new JMenuItem();
-
-		helpMenu = new JMenu();
-		aboutMenuItem = new JMenuItem();
-		helpMenuItem = new JMenuItem();
-
 		////
 		// textArea
 		////
@@ -100,7 +91,7 @@ public class ChatFrame extends JFrame {
 		// Chat Panel
 		////
 
-		chatPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Chat"));
+		chatPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(otherClient.getName()));
 		chatPanel.setBounds(0, 0, getWidth() - 8, getHeight() - 180);
 		chatPanel.setLayout(new GridLayout(1, 1, 0, 0));
 		chatPanel.add(jScrollPane1, BorderLayout.CENTER);
@@ -136,31 +127,6 @@ public class ChatFrame extends JFrame {
 		panel.add(chatPanel);
 		panel.add(userInputPanel);
 
-		////
-		// File Menu
-		////
-
-		fileMenu.setText("File");
-
-		signOutMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/exit.png")));
-		signOutMenuItem.setText(Common.SignOut);
-		fileMenu.add(signOutMenuItem);
-		menuBar.add(fileMenu);
-
-		////
-		// Help Menu
-		////
-
-		helpMenu.setText("Help");
-		aboutMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/about.png")));
-		aboutMenuItem.setText("About");
-		helpMenu.add(aboutMenuItem);
-		helpMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/help.png")));
-		helpMenuItem.setText("Help");
-		helpMenu.add(helpMenuItem);
-		menuBar.add(helpMenu);
-
-		this.add(menuBar);
 		this.add(panel);
 	}
 
@@ -176,12 +142,11 @@ public class ChatFrame extends JFrame {
 
 				try {
 					if (isCilent) {
-						chatTextArea.append("\n" + userNameClient + ": " + userInputTextField.getText());
 
-						chat = userInputTextField.getText();
+						msg = getMsg();
 
-						dataOutputStreamClient.writeUTF(chat);
-						dataOutputStreamClient.flush();
+						objOutputStreamClient.writeObject(msg);
+						objOutputStreamClient.flush();
 						if (t.isInterrupted()) {
 							t.start();
 						}
@@ -204,64 +169,23 @@ public class ChatFrame extends JFrame {
 
 		});
 
-		////
-		// Exit Menu Item action Listener
-		////
-
-		signOutMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				System.exit(0);
-			}
-		});
-
-		////
-		// aboutMenuItem Action listener
-		////
-
-		aboutMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				JOptionPane.showMessageDialog(rootPane,
-						"Server Client Messenger" + "\n" + "Developer By: " + "Williyam Sarkar" + "\nEmail: "
-								+ "williyam.sarkar@gmail.com",
-						"About", JOptionPane.INFORMATION_MESSAGE,
-						new javax.swing.ImageIcon(getClass().getResource("/resources/about.png")));
-
-			}
-		});
-
-		////
-		// helpMenuitem Action Listener
-		////
-		helpMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				JOptionPane.showMessageDialog(rootPane,
-						"AppName = Server Client Messanger\nDevelopedBy = Williyam Sarkar\n"
-								+ "						DeveloperEmail = williyam.sarkar@gmail.com \n"
-								+ "						AppHelp =\n"
-								+ "						- If you are initiating the chat then select Server mode.\n"
-								+ "						- If you want to join a Server select Client mode.\n"
-								+ "						- In Server mode you have to provide the Port Id.\n"
-								+ "						- You can see your IP address from the MyIP menu.\n"
-								+ "						- A default Port Id has been already provided.\n"
-								+ "						- In Client mode you have to enter the Server Ip and Server Port Id.\n"
-								+ "						- Use the input text field to enter your chat message.\n"
-								+ "						- Select the white board from the white board menu.\n"
-								+ "						- Save your chat using the save chat option from the file menu.\n"
-								+ "						- Before exiting the application close the connection.",
-						"About", JOptionPane.INFORMATION_MESSAGE,
-						new javax.swing.ImageIcon(getClass().getResource("/resources/about.png")));
-			}
-		});
-
+	}
+	private MSG getMsg(){
+		chat = userInputTextField.getText();
+		
+		MSG msg = new MSG();
+		
+		msg.setMessage_id(0);
+		msg.setMessage_type("String");
+		msg.setMessage(chat);
+		msg.setReceiver_user_id(otherClient.getUser_id());
+		msg.setReceiving_date(null);
+		msg.setIs_received(0);
+		msg.setSender_user_id(me.getUser_id());
+		msg.setSending_date(Calendar.getInstance().getTime());
+		msg.setIs_send(0);
+		msg.setIs_seen(0);
+		return msg;
 	}
 
 	public void GetMessegeThread() {
@@ -270,26 +194,22 @@ public class ChatFrame extends JFrame {
 			@Override
 			public void run() {
 				while (isCilent) {
-					if (isCilent) {
-						try {
-							chatTextArea.append("\n" + "Server : " + dataInputStreamClient.readUTF());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-
+					/*try {
+						chatTextArea.append("\n" + "Server : " + objInputStreamClient.readObject());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}*/
 				}
 			}
 		});
 		t.start();
 	}
 
-	boolean isCilent = false;
-	private String userNameClient = null;
+	boolean isCilent = true;
 	private String chat;
 
-	private DataInputStream dataInputStreamClient;
-	private DataOutputStream dataOutputStreamClient;
+	private ObjectInputStream objInputStreamClient;
+	private ObjectOutputStream objOutputStreamClient;
 
 	private JPanel panel, chatPanel;
 	private JScrollPane jScrollPane1;
@@ -298,14 +218,5 @@ public class ChatFrame extends JFrame {
 	private JPanel userInputPanel;
 	private JTextField userInputTextField;
 	private JButton userInputSendButton;
-
-	private JMenuBar menuBar;
-
-	private JMenu fileMenu;
-	private JMenuItem signOutMenuItem;
-
-	private JMenu helpMenu;
-	private JMenuItem aboutMenuItem;
-	private JMenuItem helpMenuItem;
 
 }

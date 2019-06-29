@@ -55,10 +55,11 @@ public class ChatFrame extends JFrame {
 		this.client = client;
 
 		this.msgController = new MsgController();
-		
+
 		try {
 			initComponents();
 			itemActionListener();
+			GetOldMessegeThread();
 			GetMessegeThread();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,7 +89,7 @@ public class ChatFrame extends JFrame {
 
 		jScrollPane1 = new JScrollPane(msgPanel);
 		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		// jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		////
 		// Chat Panel
@@ -147,10 +148,7 @@ public class ChatFrame extends JFrame {
 					msg = getMsg();
 					client.writeMessage(msg);
 
-					JLabel LblMsg = new JLabel(msg.getMessage(), SwingConstants.RIGHT);
-					LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
-
-					msgPanel.add(LblMsg);
+					addTOPanel(msg);
 					msgPanel.revalidate();
 
 				} catch (NullPointerException ex) {
@@ -195,20 +193,16 @@ public class ChatFrame extends JFrame {
 
 			@Override
 			public void run() {
-				while (client.isConnected()) {
-					try {
+				try {
+					while (client.isConnected()) {
 						MSG msg = (MSG) client.getObjInputStream().readObject();
-						JLabel LblMsg = new JLabel(msg.getMessage(), SwingConstants.LEFT);
-						LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
 
-						msgPanel.add(LblMsg);
+						addTOPanel(msg);
 						msgPanel.revalidate();
 
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
 					}
+				} catch (IOException | ClassNotFoundException e) {
+					e.printStackTrace();
 				}
 			}
 		});
@@ -217,14 +211,20 @@ public class ChatFrame extends JFrame {
 
 	public void GetOldMessegeThread() {
 		List<MSG> msgs = msgController.getAllMyMsg(me.getUser_id());
-		for (int i = 0; i <msgs.size(); i++) {
-			MSG msg  = msgs.get(i);
-			JLabel LblMsg = new JLabel(msg.getMessage(), msg.getReceiver_user_id()==me.getUser_id()? SwingConstants.LEFT :  SwingConstants.RIGHT);
-			LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
-
-			msgPanel.add(LblMsg);
+		for (int i = 0; i < msgs.size(); i++) {
+			MSG msg = msgs.get(i);
+			addTOPanel(msg);
 		}
 		msgPanel.revalidate();
+	}
+
+	private void addTOPanel(MSG msg) {
+		JLabel LblMsg = new JLabel(msg.getMessage(),
+				msg.getReceiver_user_id() == me.getUser_id() ? SwingConstants.LEFT : SwingConstants.RIGHT);
+		LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
+
+		msgPanel.add(LblMsg);
+
 	}
 
 	boolean isCilent = true;

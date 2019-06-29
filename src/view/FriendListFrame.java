@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -240,9 +241,13 @@ public class FriendListFrame extends JFrame {
 					isLogedIn = false;
 				}
 				me.setIs_logged_in(0);
-
-				userController.updateUser(me);
-				goTo("Login");
+				try {
+					client.CloseConnection();
+					userController.updateUser(me);
+					goTo("Login");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 

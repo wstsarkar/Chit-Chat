@@ -46,7 +46,7 @@ public class MsgRepository {
 		}
 		return list;
 	}
-	private MSG msg(String query){
+/*	private MSG msg(String query){
 		ResultSet rs = DataBaseHelper.executeSelectQuery(query);	
 		MSG msg = null;
 		try {
@@ -58,6 +58,7 @@ public class MsgRepository {
 		}
 		return msg;
 	}
+	*/
 	
 
 	public int createMSG(MSG msg) {
@@ -85,6 +86,43 @@ public class MsgRepository {
 		
 		int id = DataBaseHelper.executeQuery(query.toString());	
 		return id;
+	}
+
+	public List<MSG> getAllMyMsg(int userId) {
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT * FROM MSGs ");
+		query.append(" WHERE (sender_user_id = " + userId+" ");
+		query.append(" OR receiver_user_id = " + userId+" )");
+		query.append(" AND is_send = 1 ");
+		query.append(" ORDER BY sending_date ASC ;");
+		return list(query.toString());
+	}
+
+	public List<MSG> getAllMySendMsg(int userId) {
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT * FROM MSGs ");
+		query.append(" WHERE sender_user_id = " + userId+" ");
+		query.append(" AND is_send = 1 ");
+		query.append(" ORDER BY sending_date ASC ;");
+		return list(query.toString());
+	}
+
+	public List<MSG> getAllMyReceiveMsg(int userId) {
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT * FROM MSGs ");
+		query.append(" WHERE receiver_user_id = " + userId+" ");
+		query.append(" AND is_send = 1 ");
+		query.append(" ORDER BY sending_date ASC ;");
+		return list(query.toString());
+	}
+
+	public List<MSG> getAllUnsendMSG(int userId) {
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT * FROM MSGs ");
+		query.append(" WHERE receiver_user_id = " + userId+" ");
+		query.append(" AND is_send = 0 ");
+		query.append(" ORDER BY sending_date ASC ;");
+		return list(query.toString());
 	}
 
 }

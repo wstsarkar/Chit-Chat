@@ -14,6 +14,8 @@ public class User {
 	private String mobile_no;
 	private int is_logged_in;
 	
+	private int is_chating;
+	
 	public User() {
 		
 	}
@@ -95,6 +97,18 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
+	public int getIs_chating() {
+		return is_chating;
+	}
+
+
+	public void setIs_chating(int is_chating) {
+		this.is_chating = is_chating;
+	}
+	
+	
 	
 	
 }

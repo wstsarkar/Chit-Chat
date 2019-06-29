@@ -2,8 +2,8 @@ package controller;
 
 import java.util.List;
 
-import been.User;
-import repository.UserRepository;
+import been.MSG;
+import repository.MsgRepository;
 
 /**
  * 
@@ -11,38 +11,35 @@ import repository.UserRepository;
  * 
  */
 public class MsgController {
-	private UserRepository repository;
+	private MsgRepository repository;
 	
 	public MsgController() {
-		this.repository = new UserRepository();
+		this.repository = new MsgRepository();
 	}
 
-	public int createUser(User user){		
-		return repository.createUser(user);
+	public int createMsg(MSG msg){		
+		return repository.createMSG(msg);
 	}
 
-	public int updateUser(User user){		
-		return repository.updateUser(user);
+	public int updateMsg(MSG msg){		
+		return repository.updateMSG(msg);
 	}
 
-	public User getUser(String userName, String password){
-		
-		return repository.getUser(userName, password);
+	public List<MSG> getAllMyMsg(int userId){		
+		return repository.getAllMyMsg(userId);
 	}
 
-	public User getUser(String userName){
-		
-		return repository.getUser(userName);
+	public List<MSG> getAllMySendMsg(int userId){		
+		return repository.getAllMySendMsg(userId);
 	}
 
-	public List<User> getAllUserExcept(String userName){
-		
-		return repository.getAllUserExcept(userName);
+	public List<MSG> getAllMyReceiveMsg(int userId){		
+		return repository.getAllMyReceiveMsg(userId);
+	}
+
+	public List<MSG> getAllUnsendMSG(int userId) {
+		return repository.getAllUnsendMSG(userId);
 	}
 	
-	public List<User> getAllOnlineUserExcept(String userName){
-		
-		return repository.getAllOnlineUserExcept(userName);
-	}
 
 }

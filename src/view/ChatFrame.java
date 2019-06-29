@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ import javax.swing.SwingConstants;
 import been.MSG;
 import been.User;
 import client.Client;
+import controller.MsgController;
 import utility.Common;
 
 /**
@@ -37,6 +39,7 @@ public class ChatFrame extends JFrame {
 	private User me, otherClient;
 	private Client client;
 	private MSG msg;
+	private MsgController msgController;
 
 	public ChatFrame(User me, User otherClient, Client client) {
 		this.setSize(Common.Chat_wnd_X, Common.Chat_wnd_Y);
@@ -51,9 +54,12 @@ public class ChatFrame extends JFrame {
 		this.otherClient = otherClient;
 		this.client = client;
 
+		this.msgController = new MsgController();
+		
 		try {
 			initComponents();
 			itemActionListener();
+			GetMessegeThread();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -141,20 +147,20 @@ public class ChatFrame extends JFrame {
 					msg = getMsg();
 					client.writeMessage(msg);
 
-					JLabel LblMsg = new JLabel(msg.getMessage(),SwingConstants.RIGHT);
+					JLabel LblMsg = new JLabel(msg.getMessage(), SwingConstants.RIGHT);
 					LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
-					
+
 					msgPanel.add(LblMsg);
 					msgPanel.revalidate();
-					
+
 				} catch (NullPointerException ex) {
 					ex.printStackTrace();
-					JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nNo Connection!", "Send Error",
+					JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nNo Connection!", Common.Error,
 							JOptionPane.ERROR_MESSAGE);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nUnknown Exception:\n" + ex,
-							"Send Error", JOptionPane.ERROR_MESSAGE);
+							Common.Error, JOptionPane.ERROR_MESSAGE);
 					Logger.getLogger(ChatFrame.class.getName()).log(Level.SEVERE, null, ex);
 				} finally {
 					userInputTextField.setText("");
@@ -192,9 +198,9 @@ public class ChatFrame extends JFrame {
 				while (client.isConnected()) {
 					try {
 						MSG msg = (MSG) client.getObjInputStream().readObject();
-						JLabel LblMsg = new JLabel(msg.getMessage(),SwingConstants.LEFT);
+						JLabel LblMsg = new JLabel(msg.getMessage(), SwingConstants.LEFT);
 						LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
-						
+
 						msgPanel.add(LblMsg);
 						msgPanel.revalidate();
 
@@ -207,6 +213,18 @@ public class ChatFrame extends JFrame {
 			}
 		});
 		t.start();
+	}
+
+	public void GetOldMessegeThread() {
+		List<MSG> msgs = msgController.getAllMyMsg(me.getUser_id());
+		for (int i = 0; i <msgs.size(); i++) {
+			MSG msg  = msgs.get(i);
+			JLabel LblMsg = new JLabel(msg.getMessage(), msg.getReceiver_user_id()==me.getUser_id()? SwingConstants.LEFT :  SwingConstants.RIGHT);
+			LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
+
+			msgPanel.add(LblMsg);
+		}
+		msgPanel.revalidate();
 	}
 
 	boolean isCilent = true;

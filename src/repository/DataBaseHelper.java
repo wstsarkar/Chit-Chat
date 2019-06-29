@@ -1,10 +1,12 @@
 package repository;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 /**
  * 
@@ -12,42 +14,46 @@ import java.sql.Statement;
  * 
  */
 public class DataBaseHelper {
-	private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=Communication";
-	private static final String USER = "sa";
-	private static final String PASS = "sonic600";
-	
+
+	private static String host;
+	private static String user;
+	private static String password;
 
 	private static Connection conn = null;
 
 	private DataBaseHelper() {
+
+		Properties prop = new Properties();
+		InputStream in = null;
 		try {
-			// STEP 2: Register JDBC driver
-			Class.forName(JDBC_DRIVER);
-
-
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		} catch (SQLException se) {
-			// Handle errors for JDBC
-			se.printStackTrace();
+			in = DataBaseHelper.class.getClassLoader().getResourceAsStream("db.properties");
+			prop.load(in);
+			String driver = prop.getProperty("driver");
+			host = prop.getProperty("host");
+			user = prop.getProperty("user");
+			password = prop.getProperty("password");
+			Class.forName(driver);
+			
+			if (conn == null || conn.isClosed()) {
+				conn = DriverManager.getConnection(host, user, password);
+			}
 		} catch (Exception e) {
-			// Handle errors for Class.forName
 			e.printStackTrace();
-		} 
+		}
 
 	}
-	
-	public static Connection getConnection(){
+
+	public static Connection getConnection() {
 		try {
-			if(conn == null || conn.isClosed())
+			if (conn == null || conn.isClosed())
 				new DataBaseHelper();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			new DataBaseHelper();
-		}			
+		}
 		return conn;
 	}
-	
+
 	public static int executeQuery(String query) {
 		Connection conn = getConnection();
 		int rowEffected = -1;
@@ -60,7 +66,7 @@ public class DataBaseHelper {
 		}
 		return rowEffected;
 	}
-	
+
 	public static ResultSet executeSelectQuery(String query) {
 		Connection conn = getConnection();
 		Statement st;
@@ -68,14 +74,11 @@ public class DataBaseHelper {
 		try {
 			st = conn.createStatement();
 			rs = st.executeQuery(query);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return rs;
 	}
-	
-	
-	
 
 }

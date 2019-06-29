@@ -8,3 +8,6 @@
 /view/
 /AppStart.class
 /AppStart$1.class
+/dbMSSqlServer.properties
+/dbMySql.properties
+/db.properties

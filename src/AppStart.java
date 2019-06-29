@@ -15,7 +15,7 @@ public class AppStart {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TabPanFrame frame = new TabPanFrame();
+					LoginFrame frame = new LoginFrame();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

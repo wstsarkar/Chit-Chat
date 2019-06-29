@@ -84,7 +84,8 @@ public class TabPanFrame extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 10, 10);
-		scrollPane.add(panel);
+		scrollPane.setViewportView(panel);
+		panel.setLayout(null);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBounds(230, 270, 350, 70);

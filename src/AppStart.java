@@ -5,7 +5,7 @@ import view.LoginFrame;
  * @author Williyam
  * 
  */
-public class AppStrat {
+public class AppStart {
 
 	public static void main(String[] args) {
 

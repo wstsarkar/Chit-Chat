@@ -37,7 +37,7 @@ public class CreateAccountFrame extends JFrame {
 		this.me = me;
 		this.loginFrame = loginFrame;
 		this.friendListFrame = friendListFrame;
-		
+
 		this.setSize(Common.Create_Acc_wnd_X, Common.Create_Acc_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
@@ -200,7 +200,7 @@ public class CreateAccountFrame extends JFrame {
 						lblErrorMessage.setText(Common.CreatUserFailed);
 						return;
 					}
-				} else if(friendListFrame != null){
+				} else if (friendListFrame != null) {
 					User user = userController.checkOtherUser(me.getUser_id(), me.getUser_name());
 					if (user != null) {
 						lblErrorMessage.setText(Common.DuplicateUserName);
@@ -227,10 +227,9 @@ public class CreateAccountFrame extends JFrame {
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if(loginFrame != null){
+				if (loginFrame != null) {
 					goTo("Login");
-				}
-				else if(friendListFrame != null){
+				} else if (friendListFrame != null) {
 					goTo("FriendList");
 				}
 			}
@@ -240,11 +239,12 @@ public class CreateAccountFrame extends JFrame {
 
 	private void goTo(String whichScreen) {
 		if (whichScreen.equals("Login")) {
-			this.loginFrame.setUserNamepassword(me.getUser_name(), me.getPassword());
+			if (me != null) {
+				this.loginFrame.setUserNamepassword(me.getUser_name(), me.getPassword());
+			}
 			this.loginFrame.setVisible(true);
 			this.dispose();
-		}
-		else if (whichScreen.equals("FriendList")) {
+		} else if (whichScreen.equals("FriendList")) {
 			this.friendListFrame.setMe(me);
 			this.dispose();
 		}

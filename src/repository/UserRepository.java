@@ -112,4 +112,13 @@ public class UserRepository {
 		return id;
 	}
 
+	public User checkOtherUser(int userId, String userName) {
+		StringBuilder query = new StringBuilder();
+		query.append(" SELECT * FROM Users ");
+		query.append(" WHERE user_name = '" + userName + "'");
+		query.append(" AND user_id != " + userId + "");
+		
+		return user(query.toString());
+	}
+
 }

@@ -125,6 +125,11 @@ public class LoginFrame extends JFrame {
 		});
 
 	}
+	
+	public void setUserNamepassword(String userName, String pass){
+		this.txtUserName.setText(userName);
+		this.txtPassword.setText(pass);
+	}
 
 	private void goTo(String whichScreen) {
 		if (whichScreen.equals("Messanger")) {
@@ -135,9 +140,9 @@ public class LoginFrame extends JFrame {
 			}
 		} else if (whichScreen.equals("Create")) {
 
-			CreateAccountFrame frame = new CreateAccountFrame(null);
+			CreateAccountFrame frame = new CreateAccountFrame(null, this, null);
 			frame.setVisible(true);
-			this.dispose();
+			this.setVisible(false);
 
 		}
 	}

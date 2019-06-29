@@ -35,6 +35,11 @@ public class UserController {
 		return repository.getUser(userName);
 	}
 
+	public User checkOtherUser(int userId,String userName){
+		
+		return repository.checkOtherUser(userId,userName);
+	}
+
 	public List<User> getAllUserExcept(String userName){
 		
 		return repository.getAllUserExcept(userName);

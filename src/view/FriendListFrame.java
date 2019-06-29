@@ -243,6 +243,18 @@ public class FriendListFrame extends JFrame {
 		});
 
 		////
+		// Sign Out Menu Item action Listener
+		////
+
+		profileMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				goTo("EditProfile");
+			}
+		});
+
+		////
 		// aboutMenuItem Action listener
 		////
 
@@ -295,11 +307,20 @@ public class FriendListFrame extends JFrame {
 			loginFrame.setVisible(true);
 			this.dispose();
 		}
+		else if (whichScreen.equals("EditProfile")) {
+			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
+			frame.setVisible(true);
+		}
 	}
 
 	private void goToChatFrame(User otherClient) {
 		ChatFrame frame = new ChatFrame(me, otherClient);
 		frame.setVisible(true);
+	}
+
+	public void setMe(User me2) {
+		this.me = me2;
+		
 	}
 
 }

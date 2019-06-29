@@ -7,6 +7,7 @@ package utility;
  */
 public class Common {
 	public static final String APP_NAME ="IIT Chit-Chat";
+	public static final int Port = 12345;
 
 	public static final String SignIn ="Sign In";
 	public static final String SignOut ="Sign Out";
@@ -21,15 +22,21 @@ public class Common {
 	public static final String LoginFailed ="UserName or Password incorrect!";
 	
 	public static final String PasswordNotMatch ="Password doesn't match!";
+	public static final String DuplicateUserName ="Duplicate User Name!";
 
 	public static final String CreatUserFailed ="Failed to Create User!";
+	public static final String UpdateUserFailed ="Failed to Update User!";
 
-	public static final String DuplicateUserName ="Duplicate User Name!";
+
+	public static final String AccountCreated ="Account created";
+	public static final String AccountUpdated ="Account Updated";
+	public static final String Success ="Success";
 
 	public static final String Send ="Send";
 	public static final String ChatList ="Chat List";
-	
+
 	public static final String Save ="Save";
+	public static final String Update ="Update";
 	public static final String Cancel ="Cancel";
 	
 

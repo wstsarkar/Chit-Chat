@@ -21,25 +21,28 @@ public class CreateAccountFrame extends JFrame {
 	private static final long serialVersionUID = 2L;
 
 	private JButton btnSave, btnCancel;
-	private JLabel lblHeader, lblUserName, lblPassword,lblConfirmPassword,lblName,lblEmail,lblMobile;
+	private JLabel lblHeader, lblUserName, lblPassword, lblConfirmPassword, lblName, lblEmail, lblMobile;
 	private JLabel lblErrorMessage;
 
-	private JTextField txtUserName,txtName,txtEmail,txtMobile;
-	private JPasswordField txtPassword,txtConfirmPassword;
-	
+	private JTextField txtUserName, txtName, txtEmail, txtMobile;
+	private JPasswordField txtPassword, txtConfirmPassword;
 
 	private UserController userController;
 	User me;
-	
-	public CreateAccountFrame(User me) {
+	private LoginFrame loginFrame;
+	private FriendListFrame friendListFrame;
+
+	public CreateAccountFrame(User me, LoginFrame loginFrame, FriendListFrame friendListFrame) {
 		super(Common.APP_NAME);
 		this.me = me;
-
+		this.loginFrame = loginFrame;
+		this.friendListFrame = friendListFrame;
+		
 		this.setSize(Common.Create_Acc_wnd_X, Common.Create_Acc_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
 
@@ -47,8 +50,23 @@ public class CreateAccountFrame extends JFrame {
 		attachCommoponent();
 
 		actionListeners();
-		
+
+		if (this.me != null) {
+			setComponentValue();
+		}
+
 		this.userController = new UserController();
+	}
+
+	private void setComponentValue() {
+		this.txtName.setText(me.getName());
+		this.txtEmail.setText(me.getEmail());
+		this.txtMobile.setText(me.getMobile_no());
+		this.txtUserName.setText(me.getUser_name());
+		this.txtPassword.setText(me.getPassword());
+		this.txtConfirmPassword.setText(me.getPassword());
+
+		this.txtUserName.setEditable(false);
 	}
 
 	private void initComponent() {
@@ -59,10 +77,10 @@ public class CreateAccountFrame extends JFrame {
 
 		lblName = new JLabel(Common.Name);
 		lblName.setBounds(25, 75, Common.TextBox_X_180, Common.TextBox_Y_30);
-		
+
 		lblEmail = new JLabel(Common.Email);
 		lblEmail.setBounds(25, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
-		
+
 		lblMobile = new JLabel(Common.Mobile);
 		lblMobile.setBounds(25, 175, Common.TextBox_X_180, Common.TextBox_Y_30);
 
@@ -74,10 +92,9 @@ public class CreateAccountFrame extends JFrame {
 
 		lblConfirmPassword = new JLabel(Common.Confirm_Password);
 		lblConfirmPassword.setBounds(25, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
-		
 
 		lblErrorMessage = new JLabel();
-		lblErrorMessage.setForeground(Color.RED);		
+		lblErrorMessage.setForeground(Color.RED);
 		lblErrorMessage.setBounds(25, 425, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		txtName = new JTextField();
@@ -85,10 +102,10 @@ public class CreateAccountFrame extends JFrame {
 
 		txtEmail = new JTextField();
 		txtEmail.setBounds(150, 125, Common.TextBox_X_180, Common.TextBox_Y_30);
-		
+
 		txtMobile = new JTextField();
 		txtMobile.setBounds(150, 175, Common.TextBox_X_180, Common.TextBox_Y_30);
-		
+
 		txtUserName = new JTextField();
 		txtUserName.setBounds(150, 225, Common.TextBox_X_180, Common.TextBox_Y_30);
 
@@ -98,7 +115,7 @@ public class CreateAccountFrame extends JFrame {
 		txtConfirmPassword = new JPasswordField();
 		txtConfirmPassword.setBounds(150, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
 
-		btnSave = new JButton(Common.Save);
+		btnSave = new JButton(me == null ? Common.Save : Common.Update);
 		btnSave.setBounds(230, 385, 100, 30);
 
 		btnCancel = new JButton(Common.Cancel);
@@ -111,7 +128,7 @@ public class CreateAccountFrame extends JFrame {
 		getContentPane().add(lblHeader);
 		getContentPane().add(lblName);
 		getContentPane().add(lblEmail);
-		getContentPane().add(lblMobile);		
+		getContentPane().add(lblMobile);
 		getContentPane().add(lblUserName);
 		getContentPane().add(lblPassword);
 		getContentPane().add(lblConfirmPassword);
@@ -122,84 +139,115 @@ public class CreateAccountFrame extends JFrame {
 		getContentPane().add(txtUserName);
 		getContentPane().add(txtPassword);
 		getContentPane().add(txtConfirmPassword);
-		
+
 		getContentPane().add(btnCancel);
 		getContentPane().add(btnSave);
 		getContentPane().add(lblErrorMessage);
 	}
 
 	private void actionListeners() {
-		
+
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
 				String name = txtName.getText();
-				if(name.equals("")){
+				if (name.equals("")) {
 					lblErrorMessage.setText(Common.NameEmpty);
 					return;
 				}
-				
+
 				String userName = txtUserName.getText();
-				if(userName.equals("")){
+				if (userName.equals("")) {
 					lblErrorMessage.setText(Common.UserNameEmpty);
 					return;
 				}
 				String passText = new String(txtPassword.getPassword());
-				if(passText.equals("")){
+				if (passText.equals("")) {
 					lblErrorMessage.setText(Common.PasswordEmpty);
 					return;
 				}
 				String confirmPassText = new String(txtConfirmPassword.getPassword());
-				if(confirmPassText.equals("")){
+				if (confirmPassText.equals("")) {
 					lblErrorMessage.setText(Common.ConfirmPasswordEmpty);
 					return;
 				}
-				if(!confirmPassText.equals(passText)){
+				if (!confirmPassText.equals(passText)) {
 					lblErrorMessage.setText(Common.PasswordNotMatch);
 					return;
 				}
-				
 
 				String email = txtEmail.getText();
 				String mobile_no = txtMobile.getText();
-				
-				User user = userController.getUser(userName);
-				if(user != null){
-					lblErrorMessage.setText(Common.DuplicateUserName);
-					return;					
-				}
-				
-				user = new User(0, userName, passText, name, email, mobile_no, 0);
-				
-				int id = userController.createUser(user);
-				if(id > 0){ 
-					JOptionPane.showMessageDialog(rootPane, "Account created", "Success", JOptionPane.INFORMATION_MESSAGE);
-                
-					goTo("Login");
-				}else{
-					lblErrorMessage.setText(Common.CreatUserFailed);
-					return;
+				if (loginFrame != null) {
+
+					User user = userController.getUser(userName);
+					if (user != null) {
+						lblErrorMessage.setText(Common.DuplicateUserName);
+						return;
+					}
+
+					user = new User(0, userName, passText, name, email, mobile_no, 0);
+
+					int id = userController.createUser(user);
+					if (id > 0) {
+						JOptionPane.showMessageDialog(rootPane, Common.AccountCreated, Common.Success,
+								JOptionPane.INFORMATION_MESSAGE);
+						user.setUser_id(id);
+						me = user;
+						goTo("Login");
+					} else {
+						lblErrorMessage.setText(Common.CreatUserFailed);
+						return;
+					}
+				} else if(friendListFrame != null){
+					User user = userController.checkOtherUser(me.getUser_id(), me.getUser_name());
+					if (user != null) {
+						lblErrorMessage.setText(Common.DuplicateUserName);
+						return;
+					}
+
+					user = new User(me.getUser_id(), userName, passText, name, email, mobile_no, me.getIs_logged_in());
+
+					int id = userController.updateUser(user);
+					if (id > 0) {
+						JOptionPane.showMessageDialog(rootPane, Common.AccountUpdated, Common.Success,
+								JOptionPane.INFORMATION_MESSAGE);
+						me = user;
+						goTo("FriendList");
+					} else {
+						lblErrorMessage.setText(Common.UpdateUserFailed);
+						return;
+					}
 				}
 
-				
-                
 			}
 		});
-		
+
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				goTo("Login");
+				if(loginFrame != null){
+					goTo("Login");
+				}
+				else if(friendListFrame != null){
+					goTo("FriendList");
+				}
 			}
 		});
 
 	}
-	
-	private void goTo(String whichScreen){
-		LoginFrame loginFrame = new LoginFrame();
-		loginFrame.setVisible(true);
-		this.dispose();
+
+	private void goTo(String whichScreen) {
+		if (whichScreen.equals("Login")) {
+			this.loginFrame.setUserNamepassword(me.getUser_name(), me.getPassword());
+			this.loginFrame.setVisible(true);
+			this.dispose();
+		}
+		else if (whichScreen.equals("FriendList")) {
+			this.friendListFrame.setMe(me);
+			this.dispose();
+		}
 	}
 
 }

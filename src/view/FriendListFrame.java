@@ -220,6 +220,7 @@ public class FriendListFrame extends JFrame {
 
 		this.friedList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
+				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) evt.getSource();
 				if (evt.getClickCount() == 2) {
 					int index = list.locationToIndex(evt.getPoint());

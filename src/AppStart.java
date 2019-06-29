@@ -1,4 +1,7 @@
+import java.awt.EventQueue;
+
 import view.LoginFrame;
+import view.TabPanFrame;
 
 /**
  * 
@@ -9,8 +12,16 @@ public class AppStart {
 
 	public static void main(String[] args) {
 
-		LoginFrame frame = new LoginFrame();
-		frame.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TabPanFrame frame = new TabPanFrame();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
 	}
 

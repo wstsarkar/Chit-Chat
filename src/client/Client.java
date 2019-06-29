@@ -2,13 +2,12 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import been.MSG;
+import utility.Common;
 
 /**
  * 
@@ -16,28 +15,26 @@ import been.MSG;
  * 
  */
 public class Client extends Thread {
-	private List<MSG> messages;
-	protected Socket client;
-	protected ObjectInputStream streamFromServer;
-	private boolean runningFlag = false;
 
-	public List<MSG> getMessages() {
-		return this.messages;
-	}
-	
+	private Socket client;
+	private ObjectInputStream objInputStream;
+	private ObjectOutputStream objOutputstream;
+
 	public void CloseConnection() throws IOException{
-		this.runningFlag = false;
 		if( !this.client.isClosed())
 			this.client.close();
 	}
 
-	public Client(String hostName, int ip) {
+	public Client(int userId) {
 		try {
-			this.client = new Socket(hostName, ip);
-			this.runningFlag = true;
-			this.streamFromServer = new ObjectInputStream(this.client.getInputStream());
-			this.messages = Collections.synchronizedList(new ArrayList<MSG>());
-			this.start();
+			this.client = new Socket(Common.HostName, Common.Port);
+			this.objInputStream = new ObjectInputStream(this.client.getInputStream());
+			this.objOutputstream = new ObjectOutputStream(this.client.getOutputStream());
+			
+			
+			writeHelloMessage(userId) ;
+			
+		//	this.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -45,17 +42,53 @@ public class Client extends Thread {
 		}
 	}
 
-	@Override
+	private void writeHelloMessage(int userId) {
+		try {
+			MSG msg = new MSG(1,userId);
+			
+			if (client.isConnected()) {
+				objOutputstream.writeObject(msg);
+				objOutputstream.flush();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void writeMessage(MSG msg) {
+		try {
+			if (client.isConnected()) {
+				objOutputstream.writeObject(msg);
+				objOutputstream.flush();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public ObjectInputStream getObjInputStream() {
+		return objInputStream;
+	}
+
+	public ObjectOutputStream getObjOutputstream() {
+		return objOutputstream;
+	}
+	
+
+	public boolean isConnected() {
+		return this.client == null ? false : this.client.isConnected();
+	}
+
+	/*@Override
 	public void run() {
 		try {
 			while (this.runningFlag) {
-				MSG m = (MSG) this.streamFromServer.readObject();
-				this.messages.add(m);
+				MSG msg = (MSG) this.objInputStream.readObject();
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

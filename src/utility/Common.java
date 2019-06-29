@@ -7,7 +7,8 @@ package utility;
  */
 public class Common {
 	public static final String APP_NAME ="IIT Chit-Chat";
-	public static final int Port = 12345;
+	public static final int Port = 5000;
+	public static final String HostName = "127.0.0.1";
 
 	public static final String SignIn ="Sign In";
 	public static final String SignOut ="Sign Out";
@@ -28,9 +29,12 @@ public class Common {
 	public static final String UpdateUserFailed ="Failed to Update User!";
 
 
+	public static final String ServerDown ="Server is not Responding!";
+	
 	public static final String AccountCreated ="Account created";
 	public static final String AccountUpdated ="Account Updated";
 	public static final String Success ="Success";
+	public static final String Error ="Error";
 
 	public static final String Send ="Send";
 	public static final String ChatList ="Chat List";

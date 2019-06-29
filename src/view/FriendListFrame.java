@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import been.User;
+import client.Client;
 import controller.UserController;
 import utility.Common;
 
@@ -58,8 +59,9 @@ public class FriendListFrame extends JFrame {
 	private boolean isLogedIn = false;
 
 	private User me;
+	private Client client;
 
-	public FriendListFrame(User me) {
+	public FriendListFrame(User me, Client client) {
 		this.setSize(Common.Chat_wnd_X, Common.Chat_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
@@ -71,6 +73,8 @@ public class FriendListFrame extends JFrame {
 		this.isLogedIn = true;
 		this.userController = new UserController();
 		this.me = me;
+		this.client = client;
+		
 		try {
 			initComponents();
 			attachCommoponent();
@@ -314,7 +318,7 @@ public class FriendListFrame extends JFrame {
 	}
 
 	private void goToChatFrame(User otherClient) {
-		ChatFrame frame = new ChatFrame(me, otherClient);
+		ChatFrame frame = new ChatFrame(me, otherClient,client);
 		frame.setVisible(true);
 	}
 

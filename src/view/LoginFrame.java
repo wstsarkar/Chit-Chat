@@ -8,10 +8,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import been.User;
+import client.Client;
 import controller.UserController;
 import utility.Common;
 
@@ -134,9 +136,16 @@ public class LoginFrame extends JFrame {
 	private void goTo(String whichScreen) {
 		if (whichScreen.equals("Messanger")) {
 			if (me != null) {
-				FriendListFrame frame = new FriendListFrame(me);
-				frame.setVisible(true);
-				this.dispose();
+				Client client = new Client(me.getUser_id());
+				if(client.isConnected()){
+					FriendListFrame frame = new FriendListFrame(me,client);
+					frame.setVisible(true);
+					this.dispose();
+				}else{
+					me = null;
+					JOptionPane.showMessageDialog(rootPane, Common.ServerDown, Common.Error,
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		} else if (whichScreen.equals("Create")) {
 

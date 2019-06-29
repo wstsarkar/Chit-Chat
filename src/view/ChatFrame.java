@@ -6,8 +6,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,15 +13,16 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.DefaultCaret;
+import javax.swing.SwingConstants;
 
 import been.MSG;
 import been.User;
+import client.Client;
 import utility.Common;
 
 /**
@@ -36,9 +35,10 @@ public class ChatFrame extends JFrame {
 	private static final long serialVersionUID = 3L;
 	Thread t;
 	private User me, otherClient;
+	private Client client;
 	private MSG msg;
 
-	public ChatFrame(User me, User otherClient) {
+	public ChatFrame(User me, User otherClient, Client client) {
 		this.setSize(Common.Chat_wnd_X, Common.Chat_wnd_Y);
 		this.setLayout(null);
 		this.setResizable(false);
@@ -46,8 +46,11 @@ public class ChatFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
+
 		this.me = me;
 		this.otherClient = otherClient;
+		this.client = client;
+
 		try {
 			initComponents();
 			itemActionListener();
@@ -59,8 +62,8 @@ public class ChatFrame extends JFrame {
 	private void initComponents() throws Exception {
 
 		chatPanel = new JPanel();
-		jScrollPane1 = new JScrollPane(chatTextArea);
-		chatTextArea = new JTextArea();
+		msgPanel = new JPanel();
+		jScrollPane1 = new JScrollPane();
 		panel = new JPanel();
 
 		userInputPanel = new JPanel();
@@ -70,20 +73,14 @@ public class ChatFrame extends JFrame {
 		////
 		// textArea
 		////
-		chatTextArea.setBorder(BorderFactory.createLineBorder(Color.darkGray));
-		chatTextArea.setBounds(5, 25, getWidth() - 40, getHeight() - 220);
-		chatTextArea.setEditable(false);
-		////
-		// Auto scrol to show last Line
-		////
-		DefaultCaret caret = (DefaultCaret) chatTextArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		msgPanel.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+		msgPanel.setBounds(5, 25, getWidth() - 40, getHeight() - 220);
 
 		////
 		// ScrollBar add to text area
 		////
 
-		jScrollPane1 = new JScrollPane(chatTextArea);
+		jScrollPane1 = new JScrollPane(msgPanel);
 		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
@@ -141,17 +138,15 @@ public class ChatFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 
 				try {
-					if (isCilent) {
+					msg = getMsg();
+					client.writeMessage(msg);
 
-						msg = getMsg();
-
-						objOutputStreamClient.writeObject(msg);
-						objOutputStreamClient.flush();
-						if (t.isInterrupted()) {
-							t.start();
-						}
-					}
-
+					JLabel LblMsg = new JLabel(msg.getMessage(),SwingConstants.RIGHT);
+					LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
+					
+					msgPanel.add(LblMsg);
+					msgPanel.revalidate();
+					
 				} catch (NullPointerException ex) {
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nNo Connection!", "Send Error",
@@ -170,11 +165,12 @@ public class ChatFrame extends JFrame {
 		});
 
 	}
-	private MSG getMsg(){
+
+	private MSG getMsg() {
 		chat = userInputTextField.getText();
-		
+
 		MSG msg = new MSG();
-		
+
 		msg.setMessage_id(0);
 		msg.setMessage_type("String");
 		msg.setMessage(chat);
@@ -193,12 +189,20 @@ public class ChatFrame extends JFrame {
 
 			@Override
 			public void run() {
-				while (isCilent) {
-					/*try {
-						chatTextArea.append("\n" + "Server : " + objInputStreamClient.readObject());
+				while (client.isConnected()) {
+					try {
+						MSG msg = (MSG) client.getObjInputStream().readObject();
+						JLabel LblMsg = new JLabel(msg.getMessage(),SwingConstants.LEFT);
+						LblMsg.setBounds(0, 205, msgPanel.getWidth(), 120);
+						
+						msgPanel.add(LblMsg);
+						msgPanel.revalidate();
+
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
-					}*/
+					}
 				}
 			}
 		});
@@ -208,12 +212,8 @@ public class ChatFrame extends JFrame {
 	boolean isCilent = true;
 	private String chat;
 
-	private ObjectInputStream objInputStreamClient;
-	private ObjectOutputStream objOutputStreamClient;
-
-	private JPanel panel, chatPanel;
+	private JPanel panel, chatPanel, msgPanel;
 	private JScrollPane jScrollPane1;
-	private JTextArea chatTextArea;
 
 	private JPanel userInputPanel;
 	private JTextField userInputTextField;

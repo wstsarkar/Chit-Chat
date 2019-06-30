@@ -27,6 +27,8 @@ import been.User;
 import client.Client;
 import controller.UserController;
 import utility.Common;
+import javax.swing.JLabel;
+import java.awt.GridLayout;
 
 public class TabPanFrame extends JFrame {
 
@@ -60,10 +62,6 @@ public class TabPanFrame extends JFrame {
 	private Thread t;
 	private User me;
 	private Client client;
-	private JPanel panel;
-	private JScrollPane scrollPane_1;
-	private JPanel panel_1;
-
 	/**
 	 * Create the frame.
 	 */
@@ -301,21 +299,29 @@ public class TabPanFrame extends JFrame {
 	}
 
 	private void addTabPan(String tabName) {
-
+/*
 		JPanel panelTabNewTab = new JPanel();
-		tabbedPane.addTab(tabName, new ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png")),
-				panelTabNewTab, null);
+		tabbedPane.addTab(tabName, new ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png")),panelTabNewTab, null);
 		tabbedPane.setEnabledAt(0, true);
 		panelTabNewTab.setLayout(null);
-
+*/
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 345, 232);
-		panelTabNewTab.add(scrollPane);
-
+		tabbedPane.addTab(tabName, new ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png")),scrollPane, null);
+		tabbedPane.setEnabledAt(0, true);
+		
 		JPanel panelChat = new JPanel();
 		panelChat.setBounds(0, 0, 10, 10);
 		scrollPane.setViewportView(panelChat);
-		panelChat.setLayout(null);
+		panelChat.setLayout(new GridLayout(10, 1, 0, 0));
+
+		JLabel lblNewLabel = new JLabel("New label");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		panelChat.add(lblNewLabel);
+		
+		JLabel lblNewLabel1 = new JLabel("New label");
+		lblNewLabel1.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelChat.add(lblNewLabel1);
 
 	}
 	
@@ -326,14 +332,9 @@ public class TabPanFrame extends JFrame {
 			this.dispose();
 		}
 		else if (whichScreen.equals("EditProfile")) {
-//			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
-//			frame.setVisible(true);
+			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
+			frame.setVisible(true);
 		}
-	}
-
-	private void goToChatFrame(User otherClient) {
-		ChatFrame frame = new ChatFrame(me, otherClient,client);
-		frame.setVisible(true);
 	}
 
 	public void setMe(User me2) {

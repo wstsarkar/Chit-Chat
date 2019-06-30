@@ -30,13 +30,13 @@ public class CreateAccountFrame extends JFrame {
 	private UserController userController;
 	User me;
 	private LoginFrame loginFrame;
-	private FriendListFrame friendListFrame;
+	private TabPanFrame tabPanFrame;
 
-	public CreateAccountFrame(User me, LoginFrame loginFrame, FriendListFrame friendListFrame) {
+	public CreateAccountFrame(User me, LoginFrame loginFrame, TabPanFrame tabPanFrame) {
 		super(Common.APP_NAME);
 		this.me = me;
 		this.loginFrame = loginFrame;
-		this.friendListFrame = friendListFrame;
+		this.tabPanFrame = tabPanFrame;
 
 		this.setSize(Common.Create_Acc_wnd_X, Common.Create_Acc_wnd_Y);
 		this.setLayout(null);
@@ -200,7 +200,7 @@ public class CreateAccountFrame extends JFrame {
 						lblErrorMessage.setText(Common.CreatUserFailed);
 						return;
 					}
-				} else if (friendListFrame != null) {
+				} else if (tabPanFrame != null) {
 					User user = userController.checkOtherUser(me.getUser_id(), me.getUser_name());
 					if (user != null) {
 						lblErrorMessage.setText(Common.DuplicateUserName);
@@ -229,7 +229,7 @@ public class CreateAccountFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (loginFrame != null) {
 					goTo("Login");
-				} else if (friendListFrame != null) {
+				} else if (tabPanFrame != null) {
 					goTo("FriendList");
 				}
 			}
@@ -245,7 +245,7 @@ public class CreateAccountFrame extends JFrame {
 			this.loginFrame.setVisible(true);
 			this.dispose();
 		} else if (whichScreen.equals("FriendList")) {
-			this.friendListFrame.setMe(me);
+			this.tabPanFrame.setMe(me);
 			this.dispose();
 		}
 	}

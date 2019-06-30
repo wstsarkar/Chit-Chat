@@ -39,7 +39,7 @@ public class FriendListFrame extends JFrame {
 
 	private JPanel panel, chatPanel;
 	private JScrollPane jScrollPane1;
-	private JList<String> friedList;
+	private JList<String> jFriendList;
 
 	private JPanel userInputPanel;
 	private JTextField userInputTextField;
@@ -90,14 +90,14 @@ public class FriendListFrame extends JFrame {
 		////
 		// textArea
 		////
-		friedList.setBorder(BorderFactory.createLineBorder(Color.darkGray));
-		friedList.setBounds(5, 25, getWidth() - 40, getHeight() - 220);
+		jFriendList.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+		jFriendList.setBounds(5, 25, getWidth() - 40, getHeight() - 220);
 
 		////
 		// ScrollBar add to text area
 		////
 
-		jScrollPane1 = new JScrollPane(friedList);
+		jScrollPane1 = new JScrollPane(jFriendList);
 		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		// jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
@@ -166,8 +166,8 @@ public class FriendListFrame extends JFrame {
 	private void initComponents() throws Exception {
 
 		chatPanel = new JPanel();
-		jScrollPane1 = new JScrollPane(friedList);
-		friedList = new JList<String>();
+		jScrollPane1 = new JScrollPane(jFriendList);
+		jFriendList = new JList<String>();
 		panel = new JPanel();
 
 		userInputPanel = new JPanel();
@@ -201,7 +201,7 @@ public class FriendListFrame extends JFrame {
 						for (int i = 0; i < onlineUserList.size(); i++) {
 							array[i] = onlineUserList.get(i).getName();
 						}
-						friedList.setListData(array);
+						jFriendList.setListData(array);
 
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
@@ -218,7 +218,7 @@ public class FriendListFrame extends JFrame {
 		// Sign Out Menu Item action Listener
 		////
 
-		this.friedList.addMouseListener(new MouseAdapter() {
+		this.jFriendList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) evt.getSource();
@@ -318,8 +318,8 @@ public class FriendListFrame extends JFrame {
 			this.dispose();
 		}
 		else if (whichScreen.equals("EditProfile")) {
-			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
-			frame.setVisible(true);
+//			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
+//			frame.setVisible(true);
 		}
 	}
 

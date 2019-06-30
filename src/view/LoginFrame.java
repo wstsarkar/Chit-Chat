@@ -138,7 +138,7 @@ public class LoginFrame extends JFrame {
 			if (me != null) {
 				Client client = new Client(me.getUser_id());
 				if(client.isConnected()){
-					FriendListFrame frame = new FriendListFrame(me,client);
+					TabPanFrame frame = new TabPanFrame(me,client);
 					frame.setVisible(true);
 					this.dispose();
 				}else{

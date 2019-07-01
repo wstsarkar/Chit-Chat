@@ -31,7 +31,8 @@ public class MsgListRenderer extends JLabel implements ListCellRenderer<MSG> {
 	@Override
 	public Component getListCellRendererComponent(JList<? extends MSG> arg0, MSG msg, int index, boolean isSelected,boolean cellHasFocus) {
 
-		setText(msg.getMessage());
+		String textMSG = msg.getReceiver_user_id() == me.getUser_id() ? "  " + msg.getMessage() : msg.getMessage() + "  ";
+		setText(textMSG);
 		setHorizontalAlignment(msg.getReceiver_user_id() == me.getUser_id() ? SwingConstants.LEFT : SwingConstants.RIGHT);		
 		return this;
 	}

@@ -4,6 +4,8 @@ import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import been.User;
 import client.Client;
 import controller.MsgController;
 import controller.UserController;
+import renderer.FriendListRenderer;
 import renderer.MsgListRenderer;
 import utility.Common;
 
@@ -68,7 +71,8 @@ public class TabPanFrame extends JFrame {
 	private JPanel panelInputText;
 	private JButton btnSend;
 
-	private JList<String> jFriendList;
+	private JList<User> jFriendList;
+	private DefaultListModel<User> modelFriendList;
 
 	private List<User> onlineUserList;
 	private UserController userController;
@@ -94,6 +98,7 @@ public class TabPanFrame extends JFrame {
 		this.client = client;
 		this.chatingList = new ArrayList<User>();
 		this.chatingMSGList = new ArrayList<DefaultListModel<MSG>>();
+		this.modelFriendList = new DefaultListModel<User>();
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, 600, 430);
@@ -113,6 +118,7 @@ public class TabPanFrame extends JFrame {
 		}
 
 		GetMessegeThread();
+
 	}
 
 	private void initComponents() {
@@ -159,8 +165,10 @@ public class TabPanFrame extends JFrame {
 				.setBorder(new TitledBorder(null, "Friend List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelFriendList.setLayout(null);
 
-		jFriendList = new JList<String>();
+		jFriendList = new JList<User>(modelFriendList);
 		jFriendList.setBounds(10, 20, 200, 330);
+		jFriendList.setCellRenderer(new FriendListRenderer());
+
 		panelFriendList.add(jFriendList);
 
 		panelTabpan = new JPanel();
@@ -191,6 +199,24 @@ public class TabPanFrame extends JFrame {
 	}
 
 	private void itemActionListener() {
+		
+		textFieldUserMsg.addKeyListener(new KeyAdapter() {
+	        @Override
+	        public void keyPressed(KeyEvent e) {
+	            if(e.getKeyCode() == KeyEvent.VK_ENTER){
+	            	int selectedIndex = tabbedPane.getSelectedIndex();
+					if (selectedIndex > -1) {
+						MSG msg = getMsg();
+						send(msg);
+					} else {
+						textFieldUserMsg.setText("");
+						JOptionPane.showMessageDialog(rootPane, "No one selected for chat!", Common.Error,
+								JOptionPane.ERROR_MESSAGE);
+					}
+	            }
+	        }
+
+	    });
 
 		btnSend.addActionListener(new ActionListener() {
 
@@ -318,11 +344,11 @@ public class TabPanFrame extends JFrame {
 	protected void send(MSG msg) {
 		try {
 
-			int selectedIndex = tabbedPane.getSelectedIndex();
-
 			client.writeMessage(msg);
-			chatingMSGList.get(selectedIndex).addElement(msg);
+
+			AddMsgToView(msg);
 			this.textFieldUserMsg.setText("");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nNo Connection!", Common.Error,
@@ -344,12 +370,21 @@ public class TabPanFrame extends JFrame {
 
 					try {
 
-						onlineUserList = userController.getAllOnlineUserExcept(me.getUser_name());
-						String[] array = new String[onlineUserList.size()];
+						onlineUserList = userController.getAllUserExcept(me.getUser_name());
 						for (int i = 0; i < onlineUserList.size(); i++) {
-							array[i] = onlineUserList.get(i).getName();
+							User user = onlineUserList.get(i);
+							if (modelFriendList.getSize() <= i
+									|| modelFriendList.get(i).getUser_id() != user.getUser_id()) {
+								modelFriendList.addElement(user);
+								i -= 1;
+							} else if (modelFriendList.get(i).getUser_id() == user.getUser_id()
+									&& modelFriendList.get(i).getIs_logged_in() != user.getIs_logged_in()) {
+								modelFriendList.remove(i);
+								modelFriendList.add(i,user);
+								i -= 1;
+							}
+
 						}
-						jFriendList.setListData(array);
 
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
@@ -368,31 +403,32 @@ public class TabPanFrame extends JFrame {
 		 * ,panelTabNewTab, null); tabbedPane.setEnabledAt(0, true);
 		 * panelTabNewTab.setLayout(null);
 		 */
+		int tabCount = tabbedPane.getTabCount();
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 345, 232);
 		tabbedPane.add(scrollPane);
-		tabbedPane.setEnabledAt(0, true);
 
 		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane),
 				getTitlePanel(tabbedPane, scrollPane, chatingUser.getName()));
 
-//		JPanel panelChat = new JPanel();
-//		panelChat.setBounds(0, 0, 0, 0);
-//		panelChat.setLayout(null);
+		// JPanel panelChat = new JPanel();
+		// panelChat.setBounds(0, 0, 0, 0);
+		// panelChat.setLayout(null);
 
 		DefaultListModel<MSG> msgList = new DefaultListModel<MSG>();
 		chatingMSGList.add(msgList);
 		JList<MSG> list = new JList<MSG>(msgList);
 		list.setVisibleRowCount(10);
 		list.setCellRenderer(new MsgListRenderer(me));
-		list.setBounds(5, 5, 320, 220);
+		list.setBounds(5, 5, 315, 220);
 		list.setAutoscrolls(true);
-	//	panelChat.add(list);
-
+		// panelChat.add(list);
 
 		scrollPane.setViewportView(list);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
+
+		tabbedPane.setSelectedIndex(tabCount);
 		GetOldMessege(chatingUser);
 	}
 
@@ -440,7 +476,8 @@ public class TabPanFrame extends JFrame {
 								if (i != selectedIndex) {
 									tabbedPane.setSelectedIndex(i);
 								}
-								chatingMSGList.get(i).addElement(msg);
+
+								AddMsgToView(msg);
 								isChatting = true;
 								break;
 							}
@@ -470,19 +507,23 @@ public class TabPanFrame extends JFrame {
 		for (int i = 0; i < msgs.size(); i++) {
 			MSG msg = msgs.get(i);
 
-			int selectedIndex = tabbedPane.getSelectedIndex();
-			chatingMSGList.get(selectedIndex).addElement(msg);
+			AddMsgToView(msg);
 		}
+	}
+
+	private void AddMsgToView(MSG msg) {
+		int selectedIndex = tabbedPane.getSelectedIndex();
+		chatingMSGList.get(selectedIndex).addElement(msg);
+
 	}
 
 	private MSG getMsg() {
 		String chat = textFieldUserMsg.getText();
 
 		int selectedIndex = tabbedPane.getSelectedIndex();
-		if (chatingList.size() <= selectedIndex) {		
+		if (chatingList.size() <= selectedIndex) {
 			throw new RuntimeException("Some thing went wrong");
 		}
-
 
 		MSG msg = new MSG();
 

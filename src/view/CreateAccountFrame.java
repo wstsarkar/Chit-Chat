@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -117,9 +118,12 @@ public class CreateAccountFrame extends JFrame {
 		txtConfirmPassword.setBounds(150, 325, Common.TextBox_X_180, Common.TextBox_Y_30);
 
 		btnSave = new JButton(me == null ? Common.Save : Common.Update);
+		btnSave.setIcon(new ImageIcon(TabPanFrame.class.getResource("/resources/Save.png")));
 		btnSave.setBounds(230, 385, 100, 30);
 
 		btnCancel = new JButton(Common.Cancel);
+
+		btnCancel.setIcon(new ImageIcon(TabPanFrame.class.getResource("/resources/Close.png")));
 		btnCancel.setBounds(25, 385, 125, 30);
 
 	}

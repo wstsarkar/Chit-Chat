@@ -440,7 +440,8 @@ public class TabPanFrame extends JFrame {
 		titlePanel.add(titleLbl);
 		JButton closeButton = new JButton();
 		closeButton.setIcon(new ImageIcon(TabPanFrame.class.getResource("/resources/Close.png")));
-
+		closeButton.setBorder(null);
+		
 		closeButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {

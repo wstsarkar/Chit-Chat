@@ -13,7 +13,7 @@ public class Common {
 	public static final String SignIn ="Sign In";
 	public static final String SignOut ="Sign Out";
 	public static final String Profile ="Profile";
-	public static final String Craete_Account ="Create Account";
+	public static final String Craete_Account ="Sign Up";
 
 	public static final String NameEmpty ="Name field empty!";
 	public static final String UserNameEmpty ="User Name field empty!";

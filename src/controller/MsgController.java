@@ -25,8 +25,8 @@ public class MsgController {
 		return repository.updateMSG(msg);
 	}
 
-	public List<MSG> getAllMyMsg(int userId){		
-		return repository.getAllMyMsg(userId);
+	public List<MSG> getAllMyMsg(int userId, int chatingUserId){		
+		return repository.getAllMyMsg(userId,chatingUserId);
 	}
 
 	public List<MSG> getAllMySendMsg(int userId){		

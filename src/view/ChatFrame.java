@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +18,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import been.MSG;
 import been.User;
@@ -46,7 +47,7 @@ public class ChatFrame extends JFrame {
 		this.setLayout(null);
 		this.setResizable(false);
 
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
 
@@ -88,7 +89,7 @@ public class ChatFrame extends JFrame {
 		////
 
 		jScrollPane1 = new JScrollPane(msgPanel);
-		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		// jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		////
@@ -210,12 +211,12 @@ public class ChatFrame extends JFrame {
 	}
 
 	public void GetOldMessegeThread() {
-		List<MSG> msgs = msgController.getAllMyMsg(me.getUser_id());
+		/*List<MSG> msgs = msgController.getAllMyMsg(me.getUser_id());
 		for (int i = 0; i < msgs.size(); i++) {
 			MSG msg = msgs.get(i);
 			addTOPanel(msg);
 		}
-		msgPanel.revalidate();
+		msgPanel.revalidate();*/
 	}
 
 	private void addTOPanel(MSG msg) {

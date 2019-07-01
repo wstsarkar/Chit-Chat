@@ -1,15 +1,22 @@
 package view;
 
+import java.awt.FlowLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -19,17 +26,25 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import been.MSG;
 import been.User;
 import client.Client;
+import controller.MsgController;
 import controller.UserController;
+import renderer.MsgListRenderer;
 import utility.Common;
-import javax.swing.JLabel;
-import java.awt.GridLayout;
 
+/**
+ * 
+ * @author Williyam
+ * 
+ */
 public class TabPanFrame extends JFrame {
 
 	/**
@@ -57,11 +72,16 @@ public class TabPanFrame extends JFrame {
 
 	private List<User> onlineUserList;
 	private UserController userController;
+	private MsgController msgController;
 	private boolean isLogedIn = false;
 
 	private Thread t;
 	private User me;
 	private Client client;
+
+	private List<User> chatingList;
+	private List<DefaultListModel<MSG>> chatingMSGList;
+
 	/**
 	 * Create the frame.
 	 */
@@ -69,15 +89,18 @@ public class TabPanFrame extends JFrame {
 
 		this.isLogedIn = true;
 		this.userController = new UserController();
+		this.msgController = new MsgController();
 		this.me = me;
 		this.client = client;
+		this.chatingList = new ArrayList<User>();
+		this.chatingMSGList = new ArrayList<DefaultListModel<MSG>>();
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, 600, 430);
 
 		this.setResizable(false);
 
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
 
@@ -89,8 +112,7 @@ public class TabPanFrame extends JFrame {
 			e.printStackTrace();
 		}
 
-		addTabPan("First");
-
+		GetMessegeThread();
 	}
 
 	private void initComponents() {
@@ -146,7 +168,7 @@ public class TabPanFrame extends JFrame {
 		contentPane.add(panelTabpan);
 		panelTabpan.setLayout(null);
 
-		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabbedPane = new JTabbedPane(SwingConstants.BOTTOM, JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabbedPane.setBounds(0, 0, 350, 260);
 		panelTabpan.add(tabbedPane);
 
@@ -169,23 +191,45 @@ public class TabPanFrame extends JFrame {
 	}
 
 	private void itemActionListener() {
+
 		btnSend.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				addTabPan("thahta ioh att");
 
+				int selectedIndex = tabbedPane.getSelectedIndex();
+				if (selectedIndex > -1) {
+					MSG msg = getMsg();
+					send(msg);
+				} else {
+					textFieldUserMsg.setText("");
+					JOptionPane.showMessageDialog(rootPane, "No one selected for chat!", Common.Error,
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
-		
+
 		this.jFriendList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent evt) {
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) evt.getSource();
 				if (evt.getClickCount() == 2) {
 					int index = list.locationToIndex(evt.getPoint());
 					User otherClient = onlineUserList.get(index);
-					addTabPan(otherClient.getName());
+
+					boolean flag = true;
+					for (int i = 0; i < chatingList.size(); i++) {
+						if (chatingList.get(i).getUser_id() == otherClient.getUser_id()) {
+							flag = false;
+							break;
+						}
+					}
+
+					if (flag) {
+						chatingList.add(otherClient);
+						addTabPan(otherClient);
+					}
 				}
 			}
 		});
@@ -269,6 +313,25 @@ public class TabPanFrame extends JFrame {
 			}
 		});
 
+	}
+
+	protected void send(MSG msg) {
+		try {
+
+			int selectedIndex = tabbedPane.getSelectedIndex();
+
+			client.writeMessage(msg);
+			chatingMSGList.get(selectedIndex).addElement(msg);
+			this.textFieldUserMsg.setText("");
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nNo Connection!", Common.Error,
+					JOptionPane.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(rootPane, "Could not Send Message!\nUnknown Exception:\n" + ex, Common.Error,
+					JOptionPane.ERROR_MESSAGE);
+		}
 
 	}
 
@@ -298,40 +361,150 @@ public class TabPanFrame extends JFrame {
 		t.start();
 	}
 
-	private void addTabPan(String tabName) {
-/*
-		JPanel panelTabNewTab = new JPanel();
-		tabbedPane.addTab(tabName, new ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png")),panelTabNewTab, null);
-		tabbedPane.setEnabledAt(0, true);
-		panelTabNewTab.setLayout(null);
-*/
+	private void addTabPan(User chatingUser) {
+		/*
+		 * JPanel panelTabNewTab = new JPanel(); tabbedPane.addTab(tabName, new
+		 * ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png"))
+		 * ,panelTabNewTab, null); tabbedPane.setEnabledAt(0, true);
+		 * panelTabNewTab.setLayout(null);
+		 */
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 345, 232);
-		tabbedPane.addTab(tabName, new ImageIcon(TabPanFrame.class.getResource("/resources/chat_16x16.png")),scrollPane, null);
+		tabbedPane.add(scrollPane);
 		tabbedPane.setEnabledAt(0, true);
-		
-		JPanel panelChat = new JPanel();
-		panelChat.setBounds(0, 0, 10, 10);
-		scrollPane.setViewportView(panelChat);
-		panelChat.setLayout(new GridLayout(10, 1, 0, 0));
 
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		panelChat.add(lblNewLabel);
-		
-		JLabel lblNewLabel1 = new JLabel("New label");
-		lblNewLabel1.setHorizontalAlignment(SwingConstants.RIGHT);
-		panelChat.add(lblNewLabel1);
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane),
+				getTitlePanel(tabbedPane, scrollPane, chatingUser.getName()));
 
+//		JPanel panelChat = new JPanel();
+//		panelChat.setBounds(0, 0, 0, 0);
+//		panelChat.setLayout(null);
+
+		DefaultListModel<MSG> msgList = new DefaultListModel<MSG>();
+		chatingMSGList.add(msgList);
+		JList<MSG> list = new JList<MSG>(msgList);
+		list.setVisibleRowCount(10);
+		list.setCellRenderer(new MsgListRenderer(me));
+		list.setBounds(5, 5, 320, 220);
+		list.setAutoscrolls(true);
+	//	panelChat.add(list);
+
+
+		scrollPane.setViewportView(list);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		GetOldMessege(chatingUser);
 	}
-	
+
+	private JPanel getTitlePanel(final JTabbedPane tabbedPane, final JScrollPane panel, String title) {
+		JPanel titlePanel = new JPanel((LayoutManager) new FlowLayout(FlowLayout.LEFT, 0, 0));
+		titlePanel.setOpaque(false);
+		JLabel titleLbl = new JLabel(title);
+		titleLbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		titlePanel.add(titleLbl);
+		JButton closeButton = new JButton();
+		closeButton.setIcon(new ImageIcon(TabPanFrame.class.getResource("/resources/Close.png")));
+
+		closeButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+				int selectedIndex = tabbedPane.getSelectedIndex();
+				if (chatingList.size() > selectedIndex) {
+					chatingList.remove(selectedIndex);
+					chatingMSGList.remove(selectedIndex);
+					tabbedPane.remove(selectedIndex);
+				}
+
+			}
+		});
+		titlePanel.add(closeButton);
+
+		return titlePanel;
+	}
+
+	public void GetMessegeThread() {
+		t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					while (client.isConnected()) {
+						MSG msg = (MSG) client.getObjInputStream().readObject();
+						boolean isChatting = false;
+						for (int i = 0; i < chatingList.size(); i++) {
+							User user = chatingList.get(i);
+							if (user.getUser_id() == msg.getSender_user_id()) {
+
+								int selectedIndex = tabbedPane.getSelectedIndex();
+								if (i != selectedIndex) {
+									tabbedPane.setSelectedIndex(i);
+								}
+								chatingMSGList.get(i).addElement(msg);
+								isChatting = true;
+								break;
+							}
+						}
+						if (!isChatting) {
+							for (int i = 0; i < onlineUserList.size(); i++) {
+								User user = onlineUserList.get(i);
+								if (user.getUser_id() == msg.getSender_user_id()) {
+									chatingList.add(user);
+									addTabPan(user);
+									break;
+								}
+							}
+						}
+
+					}
+				} catch (IOException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		t.start();
+	}
+
+	public void GetOldMessege(User chatingUser) {
+		List<MSG> msgs = msgController.getAllMyMsg(me.getUser_id(), chatingUser.getUser_id());
+		for (int i = 0; i < msgs.size(); i++) {
+			MSG msg = msgs.get(i);
+
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			chatingMSGList.get(selectedIndex).addElement(msg);
+		}
+	}
+
+	private MSG getMsg() {
+		String chat = textFieldUserMsg.getText();
+
+		int selectedIndex = tabbedPane.getSelectedIndex();
+		if (chatingList.size() <= selectedIndex) {		
+			throw new RuntimeException("Some thing went wrong");
+		}
+
+
+		MSG msg = new MSG();
+
+		msg.setMessage_id(0);
+		msg.setMessage_type("String");
+		msg.setMessage(chat);
+		msg.setReceiver_user_id(chatingList.get(selectedIndex).getUser_id());
+		msg.setReceiving_date(null);
+		msg.setIs_received(0);
+		msg.setSender_user_id(me.getUser_id());
+		msg.setSending_date(Calendar.getInstance().getTime());
+		msg.setIs_send(0);
+		msg.setIs_seen(0);
+		return msg;
+	}
+
 	private void goTo(String whichScreen) {
 		if (whichScreen.equals("Login")) {
 			LoginFrame loginFrame = new LoginFrame();
 			loginFrame.setVisible(true);
 			this.dispose();
-		}
-		else if (whichScreen.equals("EditProfile")) {
+		} else if (whichScreen.equals("EditProfile")) {
 			CreateAccountFrame frame = new CreateAccountFrame(me, null, this);
 			frame.setVisible(true);
 		}
@@ -339,6 +512,6 @@ public class TabPanFrame extends JFrame {
 
 	public void setMe(User me2) {
 		this.me = me2;
-		
+
 	}
 }

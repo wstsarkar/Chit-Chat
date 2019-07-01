@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 import been.User;
 import client.Client;
@@ -67,7 +69,7 @@ public class FriendListFrame extends JFrame {
 		this.setLayout(null);
 		this.setResizable(false);
 
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
 
@@ -98,7 +100,7 @@ public class FriendListFrame extends JFrame {
 		////
 
 		jScrollPane1 = new JScrollPane(jFriendList);
-		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		// jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		////
@@ -219,6 +221,7 @@ public class FriendListFrame extends JFrame {
 		////
 
 		this.jFriendList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent evt) {
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) evt.getSource();

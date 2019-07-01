@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import been.User;
 import controller.UserController;
@@ -42,7 +43,7 @@ public class CreateAccountFrame extends JFrame {
 		this.setLayout(null);
 		this.setResizable(false);
 
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Common.APP_NAME);
 		this.setLocationRelativeTo(null);
 

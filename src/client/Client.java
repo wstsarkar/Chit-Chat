@@ -54,7 +54,7 @@ public class Client extends Thread {
 			e.printStackTrace();
 		}
 	}
-	public void writeMessage(MSG msg) {
+	public void writeMessage(MSG msg) throws IOException {
 		try {
 			if (client.isConnected()) {
 				objOutputstream.writeObject(msg);
@@ -62,6 +62,7 @@ public class Client extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
 	}
 	
